@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Polufabrikkat.Models;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +16,7 @@ namespace Polufabrikkat.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(IFormFile loadFile)
+        public async Task<IActionResult> Index()
         {
 			return View();
         }
@@ -35,5 +36,34 @@ namespace Polufabrikkat.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-    }
+
+		public IActionResult RedirectToTikTokLogin()
+		{
+			var clientKey = "awcas2aer6q9nym5"; // from tiktok dev
+			var scope = "user.info.basic,video.publish";
+			var redirectUrl = Url.Action("ProcessTikTokLoginResponse", "Home");
+			var uniqueIdentificatorState = "testState";
+			var responseType = "code";
+			var queryString = new Dictionary<string, string>()
+			{
+				["client_key"] = clientKey,
+				["scope"] = scope,
+				["redirect_uri"] = redirectUrl,
+				["state"] = uniqueIdentificatorState,
+				["response_type"] = responseType
+			};
+
+			var authorizationUrl = "https://www.tiktok.com/v2/auth/authorize/";
+			var url = new Uri(QueryHelpers.AddQueryString(authorizationUrl, queryString));
+
+			return Redirect(url.ToString());
+		}
+
+		public IActionResult ProcessTikTokLoginResponse()
+		{
+			var response = Response;
+			return RedirectToAction("Index", "Home");
+		}
+
+	}
 }
