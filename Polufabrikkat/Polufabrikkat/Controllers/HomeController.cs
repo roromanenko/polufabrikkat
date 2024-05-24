@@ -40,9 +40,9 @@ namespace Polufabrikkat.Controllers
 		public IActionResult RedirectToTikTokLogin()
 		{
 			var clientKey = "awcas2aer6q9nym5"; // from tiktok dev
-			var scope = "user.info.basic,video.publish";
-			var redirectUrl = Url.Action("ProcessTikTokLoginResponse", "Home");
-			var uniqueIdentificatorState = "testState";
+			var scope = "user.info.basic";
+			var redirectUrl = Url.Action("ProcessTikTokLoginResponse", "Home", null, Request.Scheme, Request.Host.Value);
+			var uniqueIdentificatorState = Guid.NewGuid().ToString("N");
 			var responseType = "code";
 			var queryString = new Dictionary<string, string>()
 			{
@@ -50,6 +50,8 @@ namespace Polufabrikkat.Controllers
 				["scope"] = scope,
 				["redirect_uri"] = redirectUrl,
 				["state"] = uniqueIdentificatorState,
+				//["code_challenge"] = uniqueIdentificatorState,
+				//["code_challenge_method"] = "plain",
 				["response_type"] = responseType
 			};
 
