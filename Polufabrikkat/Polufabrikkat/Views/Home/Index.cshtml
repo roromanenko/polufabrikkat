@@ -2,8 +2,42 @@
     ViewData["Title"] = "Future Posting";
 }
 
+@section Styles{
+	<style>
+		a.tiktok-login {
+			background-color: #000000; /* TikTok red */
+			color: #ffffff;
+			border: none;
+			padding: 10px 20px;
+			font-size: 1rem;
+			font-weight: bold;
+			border-radius: 25px;
+			cursor: pointer;
+			transition: background-color 0.3s, transform 0.3s;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			position: relative;
+			overflow: hidden;
+			text-decoration: auto;
+			display:inline-flex;
+		}
+
+		a.tiktok-login:hover {
+			background-color: #cc0a53;
+		}
+
+		div.tiktok-icon {
+			width: 30px;
+			height: 30px;
+			background-image: url(../../img/tik-tok.png);
+			background-size: 30px 30px;
+			background-color: transparent;
+			margin: auto;
+		}
+	</style>
+}
+
 <div class="text-center">
-    <h1 class="display-4">Welcome to Future Posting</h1>
+	<h1 class="display-4">Welcome to Future Posting</h1>
 	<div>
 		TikTok Delayed Publication Service is a convenient tool, 
 		allowing users to schedule and publish content on TikTok at a later time and date. 
@@ -12,8 +46,10 @@
 		By ensuring timely and strategic content releases, 
 		users can optimize their TikTok presence for maximum engagement and impact.
 	</div>
-	<div>
-		<a href='@Url.Action("RedirectToTikTokLogin", "Home")'>Continue with TikTok</a>
+	<div style="margin: 2%;">
+		<a href='@Url.Action("RedirectToTikTokLogin", "Home")' class="tiktok-login">
+			<div class="tiktok-icon"></div>
+			<span>Continue with TikTok</span>
+		</a>
 	</div>
 </div>
-
