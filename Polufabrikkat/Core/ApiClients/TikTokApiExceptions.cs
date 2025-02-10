@@ -7,7 +7,7 @@
 			return errorCode switch
 			{
 				"access_token_invalid" => new TikTokInvalidTokenException("Invalid access token"),
-				_ => new BaseTikTokApiException("TikTok API error")
+				_ => new BaseTikTokApiException($"TikTok API error: {errorCode}")
 			};
 		}
 	}

@@ -25,6 +25,8 @@ namespace Polufabrikkat.Core
 			services.AddScoped<IOpenAiApiClient, OpenAiApiClient>();
 			services.AddScoped<IUnsplashApiClient, UnsplashApiClient>();
 			services.AddScoped<IAiImageProcessor, AiImageProcessor>();
+			services.AddScoped<IGoogleService, GoogleService>();
+			services.AddScoped<IGoogleApiClient, GoogleApiClient>();
 
 			return services;
 		}

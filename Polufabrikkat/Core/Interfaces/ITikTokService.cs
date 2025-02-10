@@ -1,13 +1,14 @@
-﻿using Polufabrikkat.Core.Models.Entities;
+﻿using Polufabrikkat.Core.Models;
+using Polufabrikkat.Core.Models.Entities;
 using Polufabrikkat.Core.Models.TikTok;
 
 namespace Polufabrikkat.Core.Interfaces
 {
-	public interface ITikTokService
+    public interface ITikTokService
 	{
 		Task<AuthTokenData> GetAuthToken(string code, string tiktokCallbackUrl);
 		string GetLoginUrl(string tiktokCallbackUrl, string returnUrl, CallbackStrategy callbackStrategy);
-		TikTokHandleCallback GetTikTokHandleCallback(string state);
+		LoginHandleCallback GetTikTokHandleCallback(string state);
 		string GetProcessTikTokLoginResponseUrl();
 
 		ITikTokAuthenticatedService WithAuthData(AuthTokenData authTokenData);

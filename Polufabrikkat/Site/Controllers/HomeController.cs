@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Polufabrikkat.Core.Interfaces;
+using Polufabrikkat.Core.Models;
 using Polufabrikkat.Core.Models.Entities;
 using Polufabrikkat.Core.Models.TikTok;
 using Polufabrikkat.Site.Models;
@@ -10,18 +13,20 @@ using System.Web;
 
 namespace Polufabrikkat.Site.Controllers
 {
-	[AllowAnonymous]
+    [AllowAnonymous]
 	public class HomeController : BaseController
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly ITikTokService _tikTokService;
 		private readonly IUserService _userService;
+		private readonly IGoogleService _googleService;
 
-		public HomeController(ILogger<HomeController> logger, ITikTokService tikTokService, IMemoryCache memoryCache, IUserService userService)
+		public HomeController(ILogger<HomeController> logger, ITikTokService tikTokService, IUserService userService, IGoogleService googleService)
 		{
 			_logger = logger;
 			_tikTokService = tikTokService;
 			_userService = userService;
+			_googleService = googleService;
 		}
 
 		public IActionResult Index()
@@ -116,7 +121,7 @@ namespace Polufabrikkat.Site.Controllers
 			var tokenData = await _tikTokService.GetAuthToken(HttpUtility.UrlDecode(response.Code), _tikTokService.GetProcessTikTokLoginResponseUrl());
 			var userInfo = await _tikTokService.WithAuthData(tokenData).GetUserInfo();
 
-			TikTokHandleCallback tikTokHandleCallback = _tikTokService.GetTikTokHandleCallback(response.State);
+			LoginHandleCallback tikTokHandleCallback = _tikTokService.GetTikTokHandleCallback(response.State);
 
 			if (tikTokHandleCallback == null)
 			{
@@ -126,9 +131,23 @@ namespace Polufabrikkat.Site.Controllers
 			return tikTokHandleCallback.CallbackStrategy switch
 			{
 				CallbackStrategy.Login => await TikTokLogin(userInfo, tokenData, tikTokHandleCallback.ReturnUrl),
-				CallbackStrategy.AddTikTokUser => await AddTikTokUser(tikTokHandleCallback.ReturnUrl, tokenData, userInfo),
+				CallbackStrategy.AddUser => await AddTikTokUser(tikTokHandleCallback.ReturnUrl, tokenData, userInfo),
 				_ => await TikTokLogin(userInfo, tokenData, tikTokHandleCallback.ReturnUrl)
 			};
+		}
+
+		public IActionResult RedirectToGoogleLogin([FromQuery] string returnUrl, [FromQuery] CallbackStrategy? callbackStrategy)
+		{
+			var loginUrl = _googleService.GetLoginUrl(returnUrl, callbackStrategy ?? CallbackStrategy.Login);
+			return Redirect(loginUrl);
+		}
+
+		public async Task<IActionResult> ProcessGoogleLoginResponse()
+		{
+			var response = new GoogleCallbackResponse(Request.Query);
+			var tokenData = await _googleService.GetAuthToken(HttpUtility.UrlDecode(response.Code));
+
+			return Json("");
 		}
 
 		private async Task<IActionResult> TikTokLogin(UserInfo userInfo, AuthTokenData tokenData, string returnUrl)

@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Polufabrikkat.Core.Interfaces;
-using Polufabrikkat.Core.Models.TikTok;
+using Polufabrikkat.Core.Models;
 using Polufabrikkat.Site.Models.User;
 
 namespace Polufabrikkat.Site.Controllers
 {
-	[Authorize]
+    [Authorize]
 	public class UserController : BaseController
 	{
 		private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace Polufabrikkat.Site.Controllers
 
 		public async Task<IActionResult> Index(UserViewModel model)
 		{
-			model.AddTikTokUserUrl = Url.Action("RedirectToTikTokLogin", "Home", new { callbackStrategy = CallbackStrategy.AddTikTokUser, returnUrl = Url.Action(null, null, null, Request.Scheme) });
+			model.AddTikTokUserUrl = Url.Action("RedirectToTikTokLogin", "Home", new { callbackStrategy = CallbackStrategy.AddUser, returnUrl = Url.Action(null, null, null, Request.Scheme) });
 
 			var user = await _userService.GetUserById(UserId);
 			model.User = _mapper.Map<UserModel>(user);

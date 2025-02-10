@@ -3,13 +3,14 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using Polufabrikkat.Core.Interfaces;
+using Polufabrikkat.Core.Models;
 using Polufabrikkat.Core.Models.Entities;
 using Polufabrikkat.Core.Models.TikTok;
 using Polufabrikkat.Core.Options;
 
 namespace Polufabrikkat.Core.Services
 {
-	public class TikTokService : ITikTokService
+    public class TikTokService : ITikTokService
 	{
 		private readonly ITikTokApiClient _tikTokApiClient;
 		private readonly IMemoryCache _memoryCache;
@@ -37,7 +38,7 @@ namespace Polufabrikkat.Core.Services
 		public string GetLoginUrl(string tiktokCallbackUrl, string returnUrl, CallbackStrategy callbackStrategy)
 		{
 			var uniqueIdentificatorState = Guid.NewGuid().ToString("N");
-			_memoryCache.Set(uniqueIdentificatorState, new TikTokHandleCallback
+			_memoryCache.Set(uniqueIdentificatorState, new LoginHandleCallback
 			{
 				CallbackStrategy = callbackStrategy,
 				ReturnUrl = returnUrl,
@@ -46,9 +47,9 @@ namespace Polufabrikkat.Core.Services
 			return _tikTokApiClient.GetLoginUrl(tiktokCallbackUrl, uniqueIdentificatorState);
 		}
 
-		public TikTokHandleCallback GetTikTokHandleCallback(string state)
+		public LoginHandleCallback GetTikTokHandleCallback(string state)
 		{
-			TikTokHandleCallback tikTokHandleCallback = null;
+			LoginHandleCallback tikTokHandleCallback = null;
 			if (!string.IsNullOrEmpty(state))
 			{
 				if (_memoryCache.TryGetValue(state, out tikTokHandleCallback))

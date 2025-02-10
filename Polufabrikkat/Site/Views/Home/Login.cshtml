@@ -1,5 +1,5 @@
-﻿@using Polufabrikkat.Core.Models.TikTok
-@using Polufabrikkat.Site.Models;
+﻿@using Polufabrikkat.Site.Models;
+@using Polufabrikkat.Core.Models;
 @model LoginModel
 
 @{
@@ -49,10 +49,10 @@
 			<h4>or login using</h4>
 
 			<!-- Google Login Button -->
-			@* <a class="button button-primary button-google" href="~/Account/ExternalLogin?provider=Google&returnUrl=@Model.ReturnUrl">
-			Login with Google
-			</a> *@
-
+			<a class="button button-primary button-google" href='@Url.Action("RedirectToGoogleLogin", "Home", new {returnUrl = Model.ReturnUrl, callbackStrategy = CallbackStrategy.Login})'>
+				Login with Google
+			</a>
+			<br />
 			<!-- TikTok Login Button -->
 			<a class="button button-tiktok" href='@Url.Action("RedirectToTikTokLogin", "Home", new {returnUrl = Model.ReturnUrl, callbackStrategy = CallbackStrategy.Login})'>
 				Login with TikTok

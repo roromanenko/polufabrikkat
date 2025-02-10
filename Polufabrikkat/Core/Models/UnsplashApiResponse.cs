@@ -29,7 +29,7 @@ namespace Polufabrikkat.Core.Models
         public object Sponsorship { get; set; }
         public TopicSubmissions TopicSubmissions { get; set; }
         public string AssetType { get; set; }
-        public User User { get; set; }
+        public UnsplashUser User { get; set; }
         public Exif Exif { get; set; }
         public Location Location { get; set; }
         public Meta Meta { get; set; }
@@ -171,7 +171,7 @@ namespace Polufabrikkat.Core.Models
         public string AssetType { get; set; }
         public bool Premium { get; set; }
         public bool Plus { get; set; }
-        public User User { get; set; }
+        public UnsplashUser User { get; set; }
     }
 
     public class TopicSubmissions
@@ -179,7 +179,7 @@ namespace Polufabrikkat.Core.Models
         // Заполните это класс при необходимости
     }
 
-    public class User
+    public class UnsplashUser
     {
         public string Id { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }

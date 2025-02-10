@@ -1,6 +1,6 @@
-﻿namespace Polufabrikkat.Core.Models.TikTok
+﻿namespace Polufabrikkat.Core.Models
 {
-	public class TikTokHandleCallback
+	public class LoginHandleCallback
 	{
 		public string ReturnUrl { get; set; }
 		public CallbackStrategy CallbackStrategy { get; set; }
@@ -9,6 +9,6 @@
 	public enum CallbackStrategy
 	{
 		Login,
-		AddTikTokUser
+		AddUser
 	}
 }

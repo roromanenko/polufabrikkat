@@ -66,14 +66,15 @@
 	background-color: #DB4437;
 }
 
+.button-google:hover {
+	color: white;
+	background-color: #a33e2f;
+}
+
 .button-tiktok {
 	display: block;
 	color: white;
 	background-color: #000000;
-}
-
-.button-google:hover {
-	background-color: #a33e2f;
 }
 
 .button-tiktok:hover {
