@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 using Polufabrikkat.Core.Options;
 using Polufabrikkat.Site.Interfaces;
 using Polufabrikkat.Site.Options;
 using Polufabrikkat.Site.Services;
 using SixLabors.ImageSharp;
+using System;
 
 namespace Polufabrikkat.Site
 {
@@ -45,40 +48,16 @@ namespace Polufabrikkat.Site
 
 			services.Configure<MongoDbOptions>(configuration.GetSection(nameof(MongoDbOptions)));
 			services.Configure<TikTokOptions>(configuration.GetSection(nameof(TikTokOptions)));
-			services.Configure<TikTokApiOptions>(config =>
-			{
-				var pubConfig = configuration.GetSection(nameof(TikTokApiOptions)).Get<TikTokApiOptions>();
-				config.Scope = pubConfig.Scope;
-				config.UserInfoFields = pubConfig.UserInfoFields;
-				if (environment.IsDevelopment())
-				{
-					config.ClientKey = configuration["Polufabrikkat:TikTokClientKey"];
-					config.ClientSecret = configuration["Polufabrikkat:TikTokClientSecret"];
-				}
-				else
-				{
-					config.ClientKey = Environment.GetEnvironmentVariable("TIKTOK_CLIENT_KEY");
-					config.ClientSecret = Environment.GetEnvironmentVariable("TIKTOK_CLIENT_SECRET");
-				}
-			});
-			services.AddScoped(opt =>
-			{
-				string connectionString;
-				if (environment.IsDevelopment())
-				{
-					connectionString = configuration["Polufabrikkat:MongodbConnection"];
-				}
-				else
-				{
-					connectionString = Environment.GetEnvironmentVariable("MONGODB_STRING");
-				}
 
-				var settings = MongoClientSettings.FromConnectionString(connectionString);
-				settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-				var client = new MongoClient(settings);
+			if (environment.IsDevelopment())
+			{
+				SetupLocalOptions(services, configuration);
+			}
+			else
+			{
+                SetupProdOptions(services, configuration);
+            }
 
-				return client;
-			});
 			services.AddHttpContextAccessor();
 			services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
@@ -122,5 +101,72 @@ namespace Polufabrikkat.Site
 
 			return app;
 		}
-	}
+
+
+		private static void SetupLocalOptions(IServiceCollection services, IConfiguration configuration)
+		{
+            services.Configure<TikTokApiOptions>(config =>
+            {
+                var pubConfig = configuration.GetSection(nameof(TikTokApiOptions)).Get<TikTokApiOptions>();
+                config.Scope = pubConfig.Scope;
+                config.UserInfoFields = pubConfig.UserInfoFields;
+                config.ClientKey = configuration["Polufabrikkat:TikTokClientKey"];
+                config.ClientSecret = configuration["Polufabrikkat:TikTokClientSecret"];
+            });
+
+            services.AddScoped(opt =>
+            {
+                string connectionString = configuration["Polufabrikkat:MongodbConnection"];
+
+                var settings = MongoClientSettings.FromConnectionString(connectionString);
+                settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+                var client = new MongoClient(settings);
+
+                return client;
+            });
+
+			services.Configure<OpenAiApiOptions>(config =>
+			{
+				config.ApiKey = configuration["Polufabrikkat:OpenAiApiKey"];
+            });
+
+            services.Configure<UnsplashApiOptions>(config =>
+            {
+                config.ApiKey = configuration["Polufabrikkat:UnsplashApiKey"];
+            });
+        }
+
+        private static void SetupProdOptions(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<TikTokApiOptions>(config =>
+            {
+                var pubConfig = configuration.GetSection(nameof(TikTokApiOptions)).Get<TikTokApiOptions>();
+                config.Scope = pubConfig.Scope;
+                config.UserInfoFields = pubConfig.UserInfoFields;
+                config.ClientKey = Environment.GetEnvironmentVariable("TIKTOK_CLIENT_KEY");
+                config.ClientSecret = Environment.GetEnvironmentVariable("TIKTOK_CLIENT_SECRET");
+            });
+
+            services.AddScoped(opt =>
+            {
+                var connectionString = Environment.GetEnvironmentVariable("MONGODB_STRING");
+
+                var settings = MongoClientSettings.FromConnectionString(connectionString);
+                settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+                var client = new MongoClient(settings);
+
+                return client;
+            });
+
+            services.Configure<OpenAiApiOptions>(config =>
+            {
+                config.ApiKey = Environment.GetEnvironmentVariable("OPEN_API_KEY");
+            });
+
+            services.Configure<UnsplashApiOptions>(config =>
+            {
+                config.ApiKey = Environment.GetEnvironmentVariable("UNSPLASH_API_KEY");
+            });
+        }
+    }
 }

@@ -1,6 +1,4 @@
-﻿
-
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 
 namespace Polufabrikkat.Core.Interfaces
 {

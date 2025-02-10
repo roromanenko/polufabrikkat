@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Главная страница";
+}
+
+<h2>Генерация контента для TikTok</h2>
+
+<form asp-action="GenerateContent" method="post">
+    <div class="form-group">
+        <label for="tags">Введите теги (через запятую):</label>
+        <input type="text" name="tags" class="form-control" id="tags" placeholder="панельки, лес эстетика" />
+    </div>
+    <button type="submit" class="btn btn-primary">Сгенерировать</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
