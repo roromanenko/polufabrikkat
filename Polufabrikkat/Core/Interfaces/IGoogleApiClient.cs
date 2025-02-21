@@ -6,5 +6,6 @@ namespace Polufabrikkat.Core.Interfaces
 	{
 		Task<AuthTokenData> GetAuthToken(string code);
 		string GetLoginUrl(string uniqueIdentificator);
+		Task<UserInfo> GetUserInfo(AuthTokenData tokenData);
 	}
 }

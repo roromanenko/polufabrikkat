@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Polufabrikkat.Core.Interfaces;
 using Polufabrikkat.Core.Models;
@@ -36,6 +35,42 @@ namespace Polufabrikkat.Core.Services
 		public Task<AuthTokenData> GetAuthToken(string code)
 		{
 			return _apiClient.GetAuthToken(code);
+		}
+
+		public LoginHandleCallback GetTikTokHandleCallback(string state)
+		{
+			LoginHandleCallback tikTokHandleCallback = null;
+			if (!string.IsNullOrEmpty(state))
+			{
+				if (_memoryCache.TryGetValue(state, out tikTokHandleCallback))
+				{
+					_memoryCache.Remove(state);
+				}
+			}
+
+			return tikTokHandleCallback;
+		}
+
+		public IGoogleAuthenticatedService WithAuthData(AuthTokenData authTokenData)
+		{
+			return new GoogleAuthenticatedService(authTokenData, _apiClient);
+		}
+	}
+
+	public class GoogleAuthenticatedService : IGoogleAuthenticatedService
+	{
+		private AuthTokenData _tokenData;
+		private readonly IGoogleApiClient _apiClient;
+
+		public GoogleAuthenticatedService(AuthTokenData tokenData, IGoogleApiClient apiClient)
+		{
+			_tokenData = tokenData;
+			_apiClient = apiClient;
+		}
+
+		public Task<UserInfo> GetUserInfo()
+		{
+			return _apiClient.GetUserInfo(_tokenData);
 		}
 	}
 }

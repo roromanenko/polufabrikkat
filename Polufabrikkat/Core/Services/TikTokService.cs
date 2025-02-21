@@ -72,8 +72,9 @@ namespace Polufabrikkat.Core.Services
 
 	public class TikTokAuthenticatedService : ITikTokAuthenticatedService
 	{
-		private readonly ITikTokApiClient _tikTokApiClient;
 		private AuthTokenData _authTokenData;
+
+		private readonly ITikTokApiClient _tikTokApiClient;
 		private readonly IUserRepository _userRepository;
 		private readonly IPostRepository _postRepository;
 		private readonly TikTokOptions _tikTokOptions;

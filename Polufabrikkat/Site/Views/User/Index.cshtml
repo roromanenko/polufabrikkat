@@ -20,7 +20,7 @@
 
 <!-- User Profile Section -->
 <section class="profile-section">
-	<div class="container" id="tiktok-users-app">
+	<div class="container" id="profile-user-app">
 		<h1>User Profile</h1>
 
 		<!-- Display User Information -->
@@ -40,9 +40,9 @@
 		</div>
 
 		<!-- List of Linked TikTok Users -->
-		<div class="tiktok-users">
+		<div class="users-list-container">
 			<h2>Linked TikTok Users</h2>
-			<ul class="tiktok-list">
+			<ul class="users-list">
 				<li v-for="user in tiktokUsers" :key="user.id">
 					<p>{{user.displayName}}</p>
 					<button class="button button-secondary" @@click="user.remove()" :disabled="user.loading">
@@ -53,8 +53,25 @@
 		</div>
 
 		<!-- Link New TikTok User -->
-		<div class="tiktok-actions">
+		<div class="user-actions">
 			<a class="button button-primary" href='@Model.AddTikTokUserUrl'>Link New TikTok User</a>
+		</div>
+
+		<div class="users-list-container">
+			<h2>Linked Google Users</h2>
+			<ul class="users-list">
+				<li v-for="user in googleUsers" :key="user.id">
+					<p>{{user.fullName}} ({{user.email}})</p>
+					<button class="button button-secondary" @@click="user.remove()" :disabled="user.loading">
+						Unlink
+					</button>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Link New Google User -->
+		<div class="user-actions">
+			<a class="button button-primary" href='@Model.AddGoogleUserUrl'>Link New Google User</a>
 		</div>
 
 		<!-- Change Password Popup (Modal) -->
@@ -95,4 +112,5 @@
 	var removeTikTokUserUrl = '@Url.Action("RemoveTikTokUser", "User")';
 	var changePasswordUrl = '@Url.Action("ChangePassword", "User")';
 	var modelTikTokUsers = @Html.Raw(JsonSerializer.Serialize(Model.User.TikTokUsers, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+	var modelGoogleUsers = @Html.Raw(JsonSerializer.Serialize(Model.User.GoogleUsers, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
 </script>

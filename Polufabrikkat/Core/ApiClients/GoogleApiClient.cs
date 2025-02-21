@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Polufabrikkat.Core.Interfaces;
 using Polufabrikkat.Core.Models.Google;
 using Polufabrikkat.Core.Options;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -21,6 +22,8 @@ namespace Polufabrikkat.Core.ApiClients
 
 		public string GetLoginUrl(string uniqueIdentificator)
 		{
+			var authorizationUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
 			var responseType = "code";
 			var queryString = new Dictionary<string, string>()
 			{
@@ -31,7 +34,6 @@ namespace Polufabrikkat.Core.ApiClients
 				["response_type"] = responseType
 			};
 
-			var authorizationUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 			var url = new Uri(QueryHelpers.AddQueryString(authorizationUrl, queryString));
 
 			return url.ToString();
@@ -64,5 +66,20 @@ namespace Polufabrikkat.Core.ApiClients
 			return content;
 		}
 
+		public async Task<UserInfo> GetUserInfo(AuthTokenData tokenData)
+		{
+			var url = "https://www.googleapis.com/userinfo/v2/me";
+
+			using var request = new HttpRequestMessage(HttpMethod.Get, url);
+			request.Headers.Authorization = new AuthenticationHeaderValue(tokenData.TokenType, tokenData.AccessToken);
+
+			using var res = await _httpClient.SendAsync(request);
+			var content = await res.Content.ReadFromJsonAsync<UserInfo>(new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+			});
+
+			return content;
+		}
 	}
 }

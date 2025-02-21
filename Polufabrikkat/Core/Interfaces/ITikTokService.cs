@@ -4,7 +4,7 @@ using Polufabrikkat.Core.Models.TikTok;
 
 namespace Polufabrikkat.Core.Interfaces
 {
-    public interface ITikTokService
+	public interface ITikTokService
 	{
 		Task<AuthTokenData> GetAuthToken(string code, string tiktokCallbackUrl);
 		string GetLoginUrl(string tiktokCallbackUrl, string returnUrl, CallbackStrategy callbackStrategy);

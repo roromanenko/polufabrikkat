@@ -26,6 +26,7 @@ namespace Polufabrikkat.Site.Controllers
 		public async Task<IActionResult> Index(UserViewModel model)
 		{
 			model.AddTikTokUserUrl = Url.Action("RedirectToTikTokLogin", "Home", new { callbackStrategy = CallbackStrategy.AddUser, returnUrl = Url.Action(null, null, null, Request.Scheme) });
+			model.AddGoogleUserUrl = Url.Action("RedirectToGoogleLogin", "Home", new { callbackStrategy = CallbackStrategy.AddUser, returnUrl = Url.Action(null, null, null, Request.Scheme) });
 
 			var user = await _userService.GetUserById(UserId);
 			model.User = _mapper.Map<UserModel>(user);

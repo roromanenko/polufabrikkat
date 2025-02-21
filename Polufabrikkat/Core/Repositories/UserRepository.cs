@@ -126,5 +126,34 @@ namespace Polufabrikkat.Core.Repositories
 
 			return _userCollection.UpdateOneAsync(filter, update);
 		}
+
+		public Task<User> GetUserByGoogleId(string googleId)
+		{
+			var filter = Builders<User>.Filter.ElemMatch(u => u.GoogleUsers, t => t.UserInfo.Id == googleId);
+			var user = _userCollection.Find(filter).FirstOrDefaultAsync();
+			return user;
+		}
+
+		public async Task AddGoogleUser(ObjectId userId, Models.Google.GoogleUser googleUser)
+		{
+			var filterGoogleUser = Builders<User>.Filter.ElemMatch(u => u.GoogleUsers, t => t.UserInfo.Id == googleUser.UserInfo.Id);
+			var userWithExistingGoogleAccount = await _userCollection.Find(filterGoogleUser).FirstOrDefaultAsync();
+			if (userWithExistingGoogleAccount != null)
+			{
+				throw new ArgumentException("This google user is already added to another account");
+			}
+
+			var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+			var update = Builders<User>.Update.Push(u => u.GoogleUsers, googleUser);
+			await _userCollection.UpdateOneAsync(filter, update);
+		}
+
+		public Task UpdateGoogleAuthData(Models.Google.AuthTokenData authData, string googleId)
+		{
+			var filter = Builders<User>.Filter.ElemMatch(u => u.GoogleUsers, tu => tu.UserInfo.Id == googleId);
+			var update = Builders<User>.Update.Set("GoogleUsers.$.AuthTokenData", authData);
+
+			return _userCollection.UpdateOneAsync(filter, update);
+		}
 	}
 }

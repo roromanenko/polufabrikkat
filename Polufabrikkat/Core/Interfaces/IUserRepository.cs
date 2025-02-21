@@ -18,5 +18,8 @@ namespace Polufabrikkat.Core.Interfaces
 		Task<QueryCreatorInfo> GetQueryCreatorInfoByOpenId(string openId);
 		Task UpdateQueryCreatorInfo(string openId, QueryCreatorInfo queryCreatorInfo);
 		Task ChangePassword(ObjectId userId, string newPasswordHash);
+		Task<User> GetUserByGoogleId(string googleId);
+		Task AddGoogleUser(ObjectId userId, Models.Google.GoogleUser googleUser);
+		Task UpdateGoogleAuthData(Models.Google.AuthTokenData authData, string googleId);
 	}
 }

@@ -53,9 +53,9 @@ namespace Polufabrikkat.Core.Services
 			return await _userRepository.CreateUser(newUser);
 		}
 
-		public Task<User> GetUserByTikTokId(string unionId)
+		public Task ChangePassword(string userId, string newPassword)
 		{
-			return _userRepository.GetUserByTikTokId(unionId);
+			return _userRepository.ChangePassword(ObjectId.Parse(userId), _passwordHasher.HashPassword(null, newPassword));
 		}
 
 		public async Task<User> GetUserById(string userId)
@@ -66,6 +66,11 @@ namespace Polufabrikkat.Core.Services
 		public async Task UpdateUser(User user)
 		{
 			await _userRepository.UpdateUser(user);
+		}
+
+		public Task<User> GetUserByTikTokId(string unionId)
+		{
+			return _userRepository.GetUserByTikTokId(unionId);
 		}
 
 		public Task RemoveTikTokUser(string userId, string tikTokUserUnionId)
@@ -83,14 +88,25 @@ namespace Polufabrikkat.Core.Services
 			return _userRepository.GetTikTokUserByUnionId(unionId);
 		}
 
-		public Task UpdateAuthData(AuthTokenData authData)
+		public Task UpdateTikTokAuthData(AuthTokenData authData)
 		{
 			return _userRepository.UpdateAuthData(authData);
 		}
 
-		public Task ChangePassword(string userId, string newPassword)
+
+		public Task<User> GetUserByGoogleId(string googleId)
 		{
-			return _userRepository.ChangePassword(ObjectId.Parse(userId), _passwordHasher.HashPassword(null, newPassword));
+			return _userRepository.GetUserByGoogleId(googleId);
+		}
+
+		public Task AddGoogleUser(string userId, Models.Google.GoogleUser googleUser)
+		{
+			return _userRepository.AddGoogleUser(ObjectId.Parse(userId), googleUser);
+		}
+
+		public Task UpdateGoogleAuthData(Models.Google.AuthTokenData authData, string googleId)
+		{
+			return _userRepository.UpdateGoogleAuthData(authData, googleId);
 		}
 	}
 }

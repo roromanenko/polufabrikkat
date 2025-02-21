@@ -22,35 +22,34 @@
 	margin-bottom: 40px;
 }
 
-/* TikTok Users Section */
-.tiktok-users {
+.users-list-container {
 	margin-bottom: 40px;
 }
 
-	.tiktok-users h2 {
+	.users-list h2 {
 		font-size: 24px;
 		margin-bottom: 20px;
 	}
 
-.tiktok-list {
+.users-list {
 	list-style-type: none;
 	padding: 0;
 }
 
-	.tiktok-list li {
+	.users-list li {
 		margin-bottom: 20px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
 
-		.tiktok-list li p {
+		.users-list li p {
 			font-size: 18px;
 			margin: 0;
 		}
 
 /* TikTok Actions */
-.tiktok-actions {
+.user-actions {
 	margin-bottom: 40px;
 }
 

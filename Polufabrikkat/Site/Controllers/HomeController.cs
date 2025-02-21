@@ -130,9 +130,20 @@ namespace Polufabrikkat.Site.Controllers
 
 			return tikTokHandleCallback.CallbackStrategy switch
 			{
-				CallbackStrategy.Login => await TikTokLogin(userInfo, tokenData, tikTokHandleCallback.ReturnUrl),
-				CallbackStrategy.AddUser => await AddTikTokUser(tikTokHandleCallback.ReturnUrl, tokenData, userInfo),
-				_ => await TikTokLogin(userInfo, tokenData, tikTokHandleCallback.ReturnUrl)
+				CallbackStrategy.Login => await ExternalLogin(tikTokHandleCallback.ReturnUrl,
+					() => _userService.GetUserByTikTokId(userInfo.UnionId),
+					() => _userService.UpdateTikTokAuthData(tokenData)),
+
+				CallbackStrategy.AddUser => await AddExternalUser(tikTokHandleCallback.ReturnUrl,
+					() => _userService.AddTikTokUser(UserId, new TikTokUser
+					{
+						AuthTokenData = tokenData,
+						UserInfo = userInfo
+					})),
+
+				_ => await ExternalLogin(tikTokHandleCallback.ReturnUrl,
+					() => _userService.GetUserByTikTokId(userInfo.UnionId),
+					() => _userService.UpdateTikTokAuthData(tokenData))
 			};
 		}
 
@@ -145,17 +156,42 @@ namespace Polufabrikkat.Site.Controllers
 		public async Task<IActionResult> ProcessGoogleLoginResponse()
 		{
 			var response = new GoogleCallbackResponse(Request.Query);
-			var tokenData = await _googleService.GetAuthToken(HttpUtility.UrlDecode(response.Code));
 
-			return Json("");
+			var tokenData = await _googleService.GetAuthToken(HttpUtility.UrlDecode(response.Code));
+			var userInfo = await _googleService.WithAuthData(tokenData).GetUserInfo();
+
+			LoginHandleCallback googleHandleCallback = _googleService.GetTikTokHandleCallback(response.State);
+
+			if (googleHandleCallback == null)
+			{
+				throw new Exception("Cannot process Google login");
+			}
+
+			return googleHandleCallback.CallbackStrategy switch
+			{
+				CallbackStrategy.Login => await ExternalLogin(googleHandleCallback.ReturnUrl,
+					() => _userService.GetUserByGoogleId(userInfo.Id),
+					() => _userService.UpdateGoogleAuthData(tokenData, userInfo.Id)),
+
+				CallbackStrategy.AddUser => await AddExternalUser(googleHandleCallback.ReturnUrl,
+					() => _userService.AddGoogleUser(UserId, new Core.Models.Google.GoogleUser
+					{
+						AuthTokenData = tokenData,
+						UserInfo = userInfo
+					})),
+
+				_ => await ExternalLogin(googleHandleCallback.ReturnUrl,
+					() => _userService.GetUserByGoogleId(userInfo.Id),
+					() => _userService.UpdateGoogleAuthData(tokenData, userInfo.Id)),
+			};
 		}
 
-		private async Task<IActionResult> TikTokLogin(UserInfo userInfo, AuthTokenData tokenData, string returnUrl)
+		private async Task<IActionResult> ExternalLogin(string returnUrl, Func<Task<User>> getUser, Func<Task> refreshData)
 		{
-			var user = await _userService.GetUserByTikTokId(userInfo.UnionId);
+			var user = await getUser();
 			if (user != null)
 			{
-				await _userService.UpdateAuthData(tokenData);
+				await refreshData();
 				await LoginUser(user);
 
 				if (!string.IsNullOrEmpty(returnUrl))
@@ -168,12 +204,12 @@ namespace Polufabrikkat.Site.Controllers
 			var model = new LoginModel
 			{
 				ReturnUrl = returnUrl,
-				Error = "You should register and add TikTok user to registered user to be available login via TikTok"
+				Error = "You should register and add External user to registered user to be available login via External services"
 			};
 			return View(nameof(Login), model);
 		}
 
-		private async Task<IActionResult> AddTikTokUser(string returnUrl, AuthTokenData tokenData, UserInfo userInfo)
+		private async Task<IActionResult> AddExternalUser(string returnUrl, Func<Task> addUser)
 		{
 			if (!User.Identity.IsAuthenticated)
 			{
@@ -184,25 +220,21 @@ namespace Polufabrikkat.Site.Controllers
 				return View(nameof(Login), model);
 			}
 
-			string error = null;
 			try
 			{
-				await _userService.AddTikTokUser(UserId, new TikTokUser
-				{
-					AuthTokenData = tokenData,
-					UserInfo = userInfo
-				});
+				await addUser();
 			}
 			catch (ArgumentException ex)
 			{
-				error = ex.Message;
+				return RedirectToAction("Index", "User", new { Error = ex.Message });
 			}
 
 			if (!string.IsNullOrEmpty(returnUrl))
 			{
 				return Redirect(returnUrl);
 			}
-			return RedirectToAction("Index", "User", new { Error = error });
+
+			return RedirectToAction("Index", "User");
 		}
 	}
 }

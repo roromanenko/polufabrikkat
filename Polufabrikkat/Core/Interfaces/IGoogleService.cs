@@ -7,5 +7,12 @@ namespace Polufabrikkat.Core.Interfaces
 	{
 		Task<AuthTokenData> GetAuthToken(string code);
 		string GetLoginUrl(string returnUrl, CallbackStrategy callbackStrategy);
+		LoginHandleCallback GetTikTokHandleCallback(string state);
+		IGoogleAuthenticatedService WithAuthData(AuthTokenData authTokenData);
+	}
+
+	public interface IGoogleAuthenticatedService
+	{
+		Task<UserInfo> GetUserInfo();
 	}
 }

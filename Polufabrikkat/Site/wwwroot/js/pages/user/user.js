@@ -1,8 +1,10 @@
 ﻿const app = Vue.createApp({
 	data() {
 		return {
-			tiktokUsers: this.initializeTikTokUsers(modelTikTokUsers),
+			tiktokUsers: modelTikTokUsers.map(user => this.createTikTokUser(user)),
 			removeTikTokUserUrl: removeTikTokUserUrl,
+			googleUsers: modelGoogleUsers.map(user => this.createTikTokUser(user)),
+
 			changePasswordUrl: changePasswordUrl,
 
 			isPopupShows: false,
@@ -12,9 +14,6 @@
 		};
 	},
 	methods: {
-		initializeTikTokUsers(tiktokUsers) {
-			return tiktokUsers.map(user => this.createTikTokUser(user));
-		},
 		createTikTokUser(tiktokUser) {
 			// Extend the TikTokUser object with a remove method
 			return {
@@ -37,6 +36,12 @@
 						this.loading = false;
 					}
 				}
+			};
+		},
+		createGoogleUser(user) {
+			return {
+				...user,
+				loading: false
 			};
 		},
 		showPasswordPopup() {
@@ -81,4 +86,4 @@
 	}
 });
 
-app.mount('#tiktok-users-app');
+app.mount('#profile-user-app');
