@@ -1,1 +1,1 @@
-docker build -f Site/Dockerfile -t evgentus0/polufrbrikkat .
+docker build -f Polufabrikkat/Dockerfile -t evgentus0/polufrbrikkat .

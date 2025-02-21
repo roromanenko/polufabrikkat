@@ -10,9 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CD00FC0-E6C2-4CDC-8F27-B744A0B22508}"
 	ProjectSection(SolutionItems) = preProject
 		BuildSiteDocker.cmd = BuildSiteDocker.cmd
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{CC8F3654-D61A-41E9-92C0-374D331EEFB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{CC8F3654-D61A-41E9-92C0-374D331EEFB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
