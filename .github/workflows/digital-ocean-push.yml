@@ -19,21 +19,16 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it.
     - name: Checkout master
       uses: actions/checkout@main
-    
-    # Build a Docker image of your application in your registry and tag the image with the $GITHUB_SHA.
-    - name: Build container image
-      run: docker build -f Polufabrikkat/Dockerfile -t registry.digitalocean.com/polufrbrikkat/futureposting .
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    
-    steps:
-
+    # Install doctl.
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    
+    # Build a Docker image of your application in your registry and tag the image with the $GITHUB_SHA.
+    - name: Build container image
+      run: docker build -f Polufabrikkat/Dockerfile -t registry.digitalocean.com/polufrbrikkat/futureposting .
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
