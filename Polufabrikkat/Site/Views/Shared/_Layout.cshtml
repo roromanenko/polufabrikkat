@@ -16,21 +16,18 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet">
+
+	@await RenderSectionAsync("Styles", required: false)
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-KZBGSY826B"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-KZBGSY826B');
+	</script>
 </head>
-@await RenderSectionAsync("Styles", required: false)
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6XZX0B9PP6"></script>
-<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag() { dataLayer.push(arguments); }
-	gtag('js', new Date());
-
-	gtag('config', 'G-6XZX0B9PP6');
-
-	$(document).ready(function (){
-		document.cookie = '@DateTimeProviderConstants.TimeZoneKey' + '=' + Intl.DateTimeFormat().resolvedOptions().timeZone;
-	});
-</script>
 
 <body>
 	<div class="main-container">
